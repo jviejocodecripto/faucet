@@ -40,7 +40,7 @@ contract DeployTokens is Script {
             "TKJ"
         ];
 
-        for (uint i = 0; i < 10; i++) {
+        for (uint i = 0; i < 2; i++) {
             Token token = new Token(tokenNames[i], tokenSymbols[i], initialSupply);
             console.log("%s deployed at:", tokenNames[i], address(token));
         }
