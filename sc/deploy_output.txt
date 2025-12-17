@@ -1,0 +1,40 @@
+Compiling 23 files with Solc 0.8.30
+Solc 0.8.30 finished in 767.59ms
+Compiler run successful!
+Script ran successfully.
+
+== Logs ==
+  Token A deployed at: 0x9A676e781A523b5d0C0e43731313A708CB607508
+  Token B deployed at: 0x0B306BF915C4d645ff596e518fAf3F9669b97016
+  Token C deployed at: 0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1
+  Token D deployed at: 0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE
+  Token E deployed at: 0x68B1D87F95878fE05B998F19b66F4baba5De1aed
+  Token F deployed at: 0x3Aa5ebB10DC797CAC828524e59A333d0A371443c
+  Token G deployed at: 0xc6e7DF5E7b4f2A278906862b61205850344D4e7d
+  Token H deployed at: 0x59b670e9fA9D0A427751Af201D676719a970857b
+  Token I deployed at: 0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1
+  Token J deployed at: 0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44
+
+## Setting up 1 EVM.
+
+==========================
+
+Chain 31337
+
+Estimated gas price: 5.34553074 gwei
+
+Estimated total gas used for script: 12338560
+
+Estimated amount required: 0.0659561517673344 ETH
+
+==========================
+
+
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+
+Transactions saved to: /Users/joseviejo/2025/cc/faucet/sc/broadcast/DeployTokens.s.sol/31337/run-latest.json
+
+Sensitive values saved to: /Users/joseviejo/2025/cc/faucet/sc/cache/DeployTokens.s.sol/31337/run-latest.json
+
