@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { ethers } from 'ethers';
 import TokenABI from '@/lib/token.json';
+import { validateProofOfWork } from '@/lib/proofOfWork';
 
 interface Token {
   _id?: string;
@@ -41,12 +42,27 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, symbol, initialSupply, decimals = 18 } = body;
+    const { name, symbol, initialSupply, decimals = 18, challenge, nonce } = body;
 
     // Validaciones
     if (!name || !symbol || !initialSupply) {
       return NextResponse.json(
         { error: 'Campos requeridos: name, symbol, initialSupply' },
+        { status: 400 }
+      );
+    }
+
+    // Validar proof-of-work
+    if (!challenge || !nonce) {
+      return NextResponse.json(
+        { error: 'Proof-of-work requerido. Por favor, recarga la página.' },
+        { status: 400 }
+      );
+    }
+
+    if (!validateProofOfWork(challenge, nonce, 4)) {
+      return NextResponse.json(
+        { error: 'Proof-of-work inválido. Por favor, intenta de nuevo.' },
         { status: 400 }
       );
     }

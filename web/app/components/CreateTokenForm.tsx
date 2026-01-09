@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { calculateProofOfWork } from '@/lib/proofOfWorkClient';
 
 interface CreateTokenResult {
   success: boolean;
@@ -31,6 +32,22 @@ export default function CreateTokenForm() {
     setResult(null);
 
     try {
+      // Obtener challenge y calcular proof-of-work
+      const challengeResponse = await fetch('/api/challenge');
+      const challengeData = await challengeResponse.json();
+      
+      if (!challengeResponse.ok || !challengeData.challenge) {
+        setResult({
+          success: false,
+          error: 'Error al obtener challenge. Por favor, intenta de nuevo.',
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Calcular proof-of-work (sin mostrar interfaz)
+      const nonce = await calculateProofOfWork(challengeData.challenge, challengeData.difficulty || 4);
+
       const response = await fetch('/api/tokens', {
         method: 'POST',
         headers: {
@@ -41,6 +58,8 @@ export default function CreateTokenForm() {
           symbol,
           initialSupply,
           decimals: parseInt(decimals, 10),
+          challenge: challengeData.challenge,
+          nonce,
         }),
       });
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ethers } from 'ethers';
+import { validateProofOfWork } from '@/lib/proofOfWork';
 
 const ERC20_ABI = [
   'function transfer(address to, uint256 amount) returns (bool)',
@@ -13,17 +14,34 @@ interface FaucetRequest {
   amount: string;
   recipientAddress: string;
   tokenType: 'native' | 'erc20';
+  challenge?: string;
+  nonce?: string;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: FaucetRequest = await request.json();
-    const { tokenAddress, amount, recipientAddress, tokenType } = body;
+    const { tokenAddress, amount, recipientAddress, tokenType, challenge, nonce } = body;
 
     // Validaciones básicas
     if (!amount || !recipientAddress || !tokenType) {
       return NextResponse.json(
         { error: 'Campos requeridos: amount, recipientAddress, tokenType' },
+        { status: 400 }
+      );
+    }
+
+    // Validar proof-of-work
+    if (!challenge || !nonce) {
+      return NextResponse.json(
+        { error: 'Proof-of-work requerido. Por favor, recarga la página.' },
+        { status: 400 }
+      );
+    }
+
+    if (!validateProofOfWork(challenge, nonce, 4)) {
+      return NextResponse.json(
+        { error: 'Proof-of-work inválido. Por favor, intenta de nuevo.' },
         { status: 400 }
       );
     }

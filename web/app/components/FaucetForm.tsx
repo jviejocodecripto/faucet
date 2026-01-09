@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { calculateProofOfWork } from '@/lib/proofOfWorkClient';
 
 type TokenType = 'native' | 'erc20';
 
@@ -78,15 +79,35 @@ export default function FaucetForm() {
     }
 
     try {
+      // Obtener challenge y calcular proof-of-work
+      const challengeResponse = await fetch('/api/challenge');
+      const challengeData = await challengeResponse.json();
+      
+      if (!challengeResponse.ok || !challengeData.challenge) {
+        setResult({
+          success: false,
+          error: 'Error al obtener challenge. Por favor, intenta de nuevo.',
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Calcular proof-of-work (sin mostrar interfaz)
+      const nonce = await calculateProofOfWork(challengeData.challenge, challengeData.difficulty || 4);
+
       const requestBody: {
         tokenType: TokenType;
         amount: string;
         recipientAddress: string;
         tokenAddress?: string;
+        challenge: string;
+        nonce: string;
       } = {
         tokenType,
         amount,
         recipientAddress,
+        challenge: challengeData.challenge,
+        nonce,
       };
 
       // Solo incluir tokenAddress si es ERC20
