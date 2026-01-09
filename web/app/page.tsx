@@ -1,5 +1,7 @@
 import FaucetForm from './components/FaucetForm';
 import BalanceChecker from './components/BalanceChecker';
+import CreateTokenForm from './components/CreateTokenForm';
+import TokenList from './components/TokenList';
 
 export default function Home() {
   return (
@@ -7,16 +9,21 @@ export default function Home() {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-zinc-900 dark:text-zinc-50 mb-4">
-            Crypto Faucet
+            Codecrypto Faucet
           </h1>
           <p className="text-lg text-zinc-600 dark:text-zinc-400">
-            Solicita fondos o consulta balances de forma gratuita
+            Solicita fondos, consulta balances y gestiona tokens ERC20
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mb-8">
           <FaucetForm />
           <BalanceChecker />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+          <CreateTokenForm />
+          <TokenList />
         </div>
       </div>
     </div>

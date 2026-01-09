@@ -69,6 +69,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validar cantidad máxima
+    if (amountNum > 100) {
+      return NextResponse.json(
+        { error: 'La cantidad máxima permitida es 100' },
+        { status: 400 }
+      );
+    }
+
     // Verificar configuración del servidor
     const privateKey = process.env.FAUCET_PRIVATE_KEY;
     const rpcUrl = process.env.RPC_URL;

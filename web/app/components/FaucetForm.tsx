@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import tokenList from '@/lib/erc20.json';
+import { useState, useEffect } from 'react';
 
 type TokenType = 'native' | 'erc20';
 
 interface Token {
+  _id?: string;
   name: string;
   symbol: string;
   address: string;
@@ -22,18 +22,60 @@ interface TransactionResult {
 }
 
 export default function FaucetForm() {
-  const tokens = tokenList.tokens as Token[];
+  const [tokens, setTokens] = useState<Token[]>([]);
+  const [tokensLoading, setTokensLoading] = useState(true);
   const [tokenType, setTokenType] = useState<TokenType>('native');
-  const [tokenAddress, setTokenAddress] = useState(tokens[0]?.address || '');
+  const [tokenAddress, setTokenAddress] = useState('');
   const [amount, setAmount] = useState('');
   const [recipientAddress, setRecipientAddress] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<TransactionResult | null>(null);
 
+  useEffect(() => {
+    const fetchTokens = async () => {
+      try {
+        const response = await fetch('/api/tokens');
+        const data = await response.json();
+        if (response.ok && data.tokens) {
+          setTokens(data.tokens);
+          if (data.tokens.length > 0) {
+            setTokenAddress(data.tokens[0].address);
+          }
+        }
+      } catch (error) {
+        console.error('Error al cargar tokens:', error);
+      } finally {
+        setTokensLoading(false);
+      }
+    };
+
+    fetchTokens();
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setResult(null);
+
+    // Validar cantidad máxima
+    const amountNum = parseFloat(amount);
+    if (isNaN(amountNum) || amountNum <= 0) {
+      setResult({
+        success: false,
+        error: 'La cantidad debe ser un número positivo',
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (amountNum > 100) {
+      setResult({
+        success: false,
+        error: 'La cantidad máxima permitida es 100',
+      });
+      setLoading(false);
+      return;
+    }
 
     try {
       const requestBody: {
@@ -139,19 +181,29 @@ export default function FaucetForm() {
             >
               Seleccionar Token
             </label>
-            <select
-              id="tokenAddress"
-              value={tokenAddress}
-              onChange={(e) => setTokenAddress(e.target.value)}
-              required
-              className="w-full px-4 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors cursor-pointer"
-            >
-              {tokens.map((token) => (
-                <option key={token.address} value={token.address}>
-                  {token.name} ({token.symbol}) - {token.address.slice(0, 6)}...{token.address.slice(-4)}
-                </option>
-              ))}
-            </select>
+            {tokensLoading ? (
+              <div className="w-full px-4 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                Cargando tokens...
+              </div>
+            ) : tokens.length === 0 ? (
+              <div className="w-full px-4 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                No hay tokens disponibles. Crea uno primero.
+              </div>
+            ) : (
+              <select
+                id="tokenAddress"
+                value={tokenAddress}
+                onChange={(e) => setTokenAddress(e.target.value)}
+                required
+                className="w-full px-4 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors cursor-pointer"
+              >
+                {tokens.map((token) => (
+                  <option key={token.address} value={token.address}>
+                    {token.name} ({token.symbol}) - {token.address.slice(0, 6)}...{token.address.slice(-4)}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
         )}
 
@@ -170,9 +222,13 @@ export default function FaucetForm() {
             placeholder="100"
             step="any"
             min="0"
+            max="100"
             required
             className="w-full px-4 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
           />
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+            Máximo: 100
+          </p>
         </div>
 
         <div>

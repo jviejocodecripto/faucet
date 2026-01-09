@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import tokenList from '@/lib/erc20.json';
+import { useState, useEffect } from 'react';
 
 type TokenType = 'native' | 'erc20';
 
 interface Token {
+  _id?: string;
   name: string;
   symbol: string;
   address: string;
@@ -31,12 +31,34 @@ interface BalanceResult {
 }
 
 export default function BalanceChecker() {
-  const tokens = tokenList.tokens as Token[];
+  const [tokens, setTokens] = useState<Token[]>([]);
+  const [tokensLoading, setTokensLoading] = useState(true);
   const [tokenType, setTokenType] = useState<TokenType>('native');
   const [address, setAddress] = useState('');
-  const [tokenAddress, setTokenAddress] = useState(tokens[0]?.address || '');
+  const [tokenAddress, setTokenAddress] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<BalanceResult | null>(null);
+
+  useEffect(() => {
+    const fetchTokens = async () => {
+      try {
+        const response = await fetch('/api/tokens');
+        const data = await response.json();
+        if (response.ok && data.tokens) {
+          setTokens(data.tokens);
+          if (data.tokens.length > 0) {
+            setTokenAddress(data.tokens[0].address);
+          }
+        }
+      } catch (error) {
+        console.error('Error al cargar tokens:', error);
+      } finally {
+        setTokensLoading(false);
+      }
+    };
+
+    fetchTokens();
+  }, []);
 
   const handleCheck = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -142,19 +164,29 @@ export default function BalanceChecker() {
             >
               Seleccionar Token
             </label>
-            <select
-              id="checkTokenAddress"
-              value={tokenAddress}
-              onChange={(e) => setTokenAddress(e.target.value)}
-              required
-              className="w-full px-4 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors text-sm cursor-pointer"
-            >
-              {tokens.map((token) => (
-                <option key={token.address} value={token.address}>
-                  {token.name} ({token.symbol}) - {token.address.slice(0, 6)}...{token.address.slice(-4)}
-                </option>
-              ))}
-            </select>
+            {tokensLoading ? (
+              <div className="w-full px-4 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 text-sm">
+                Cargando tokens...
+              </div>
+            ) : tokens.length === 0 ? (
+              <div className="w-full px-4 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 text-sm">
+                No hay tokens disponibles. Crea uno primero.
+              </div>
+            ) : (
+              <select
+                id="checkTokenAddress"
+                value={tokenAddress}
+                onChange={(e) => setTokenAddress(e.target.value)}
+                required
+                className="w-full px-4 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors text-sm cursor-pointer"
+              >
+                {tokens.map((token) => (
+                  <option key={token.address} value={token.address}>
+                    {token.name} ({token.symbol}) - {token.address.slice(0, 6)}...{token.address.slice(-4)}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
         )}
 
