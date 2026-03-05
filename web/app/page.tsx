@@ -2,6 +2,7 @@ import FaucetForm from './components/FaucetForm';
 import BalanceChecker from './components/BalanceChecker';
 import CreateTokenForm from './components/CreateTokenForm';
 import TokenList from './components/TokenList';
+import BesuNetworkConnect from './components/BesuNetworkConnect';
 
 export default function Home() {
   return (
@@ -14,6 +15,10 @@ export default function Home() {
           <p className="text-lg text-zinc-600 dark:text-zinc-400">
             Solicita fondos, consulta balances y gestiona tokens ERC20
           </p>
+        </div>
+
+        <div className="mb-8">
+          <BesuNetworkConnect />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start mb-8">
