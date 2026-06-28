@@ -43,11 +43,11 @@ export default function BesuNetworkConnect() {
               symbol: 'CC',
               decimals: 18,
             },
-            rpcUrls: ['https://besu1.proyectos.codecrypto.academy',
+            rpcUrls: ['https://besu.alumnos.codecrypto.academy',
               'https://besu2.proyectos.codecrypto.academy',
               'https://besu3.proyectos.codecrypto.academy',
               'https://besu4.proyectos.codecrypto.academy'],
-            blockExplorerUrls: ['https://besu1.proyectos.codecrypto.academy'],
+            blockExplorerUrls: ['https://besu.alumnos.codecrypto.academy'],
           },
         ],
       });
@@ -89,7 +89,7 @@ export default function BesuNetworkConnect() {
               <span className="font-semibold">Chain ID:</span> 81234
             </li>
             <li>
-              <span className="font-semibold">RPC URL:</span> https://besu1.proyectos.codecrypto.academy
+              <span className="font-semibold">RPC URL:</span> https://besu.alumnos.codecrypto.academy
             </li>
             <li>
               <span className="font-semibold">Moneda:</span> CC (18 decimales)
